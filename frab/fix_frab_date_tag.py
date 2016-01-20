@@ -3,7 +3,8 @@ import urllib.request
 import sys
 from time import strftime, localtime
 
-schedule_url = "ADD URL HERE"
+schedule_url = "https://fosdem.org/2017/schedule/xml"
+subtitle = "Brussels / 4 & 5 February 2017"
 print( "## getting meta data from " + schedule_url + " ##")
 global frab_data
 try:
@@ -21,6 +22,9 @@ formatted_download_time = strftime("%Y-%m-%d %H:%M", download_time)
 root.append(ET.Element('version'))
 root.find('version').text = formatted_download_time
 
+conference = root.find('conference')
+conference.find('subtitle').text = subtitle
+
 for day in root.iter('day'):
     date = day.attrib['date']
     day.set('end', date + "T05:00:00+01:00")
@@ -30,4 +34,4 @@ for day in root.iter('day'):
         event.append(ET.Element('date'))
         event.find('date').text = date +  "T" + event.find('start').text + ":00+01:00"
 
-tree.write("test.xml")
+tree.write("schedule-" + strftime("%Y%m%d_%H%M", download_time) + ".xml")
