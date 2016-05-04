@@ -3,7 +3,8 @@ import urllib.request
 import sys
 from time import strftime, localtime
 
-schedule_url = "ADD URL HERE"
+schedule_url = "http://www.pgcon.org/2016/schedule/schedule.en.xml"
+subtitle = "University of Ottawa / May 17 - 20, 2016"
 print( "## getting meta data from " + schedule_url + " ##")
 global frab_data
 try:
@@ -21,13 +22,16 @@ formatted_download_time = strftime("%Y-%m-%d %H:%M", download_time)
 root.append(ET.Element('version'))
 root.find('version').text = formatted_download_time
 
+conference = root.find('conference')
+conference.find('subtitle').text = subtitle
+
 for day in root.iter('day'):
     date = day.attrib['date']
-    day.set('end', date + "T05:00:00+01:00")
-    day.set('start', date + "T10:00:00+01:00")
+    day.set('end', date + "T05:00:00-04:00")
+    day.set('start', date + "T10:00:00-04:00")
     for event in day.iter('event'):
         # Append ISO 8601 date; example: 2016-02-29T23:42:00+01:00
         event.append(ET.Element('date'))
-        event.find('date').text = date +  "T" + event.find('start').text + ":00+01:00"
+        event.find('date').text = date +  "T" + event.find('start').text + ":00-04:00"
 
-tree.write("test.xml")
+tree.write("schedule-" + strftime("%Y%m%d_%H%M", download_time) + ".xml")
